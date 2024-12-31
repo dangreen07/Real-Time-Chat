@@ -10,3 +10,10 @@ body {
     color-scheme: dark;
   }
 }
+
+@layer base {
+  .dark,
+  :root[class~="dark"] {
+    --radius: 0.5rem;
+  }
+}
