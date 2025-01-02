@@ -1,6 +1,5 @@
 use diesel::{prelude::*, r2d2::Pool};
 use dotenvy::dotenv;
-use redis::Client;
 use types::DbPool;
 use std::env;
 
@@ -17,13 +16,4 @@ pub fn get_connection_pool() -> DbPool {
         .test_on_check_out(true)
         .build(manager)
         .expect("Could not build connection pool")
-}
-
-pub fn get_redis_connection_pool() -> Pool<Client> {
-    dotenv().ok();
-    
-    let redis_url = env::var("REDIS_URL").expect("REDIS_URL must be set");
-    let client = redis::Client::open(redis_url.as_str()).expect("Could not connect to Redis");
-    let pool = Pool::builder().build(client).expect("Could not build Redis connection pool");
-    return pool;
 }
