@@ -120,3 +120,4 @@ jobs:
             sudo docker compose stop real-time-chat-backend
             sudo docker compose stop real-time-chat-frontend
             sudo docker compose up -d --pull always
+            sudo docker image prune -a -f
