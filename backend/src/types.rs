@@ -7,6 +7,13 @@ pub struct PostedUser {
     pub password: String,
 }
 
+#[derive(Deserialize)]
+pub struct SignupUser {
+    pub username: String,
+    pub full_name: String,
+    pub password: String,
+}
+
 #[derive(Serialize)]
 pub struct SessionReturn {
     pub session_id: uuid::Uuid,
@@ -18,11 +25,21 @@ pub struct SessionInput {
     pub session_id: uuid::Uuid
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct UserResponse {
     pub id: uuid::Uuid,
     pub username: String,
+    pub full_name: String,
     pub permissions: String
 }
 
 pub type DbPool = Pool<ConnectionManager<PgConnection>>;
+
+#[derive(Serialize)]
+pub struct ResponseMessage {
+    pub id: uuid::Uuid,
+    pub user_id: uuid::Uuid,
+    pub recipient_id: uuid::Uuid,
+    pub message: String,
+    pub sent_at: i64
+}

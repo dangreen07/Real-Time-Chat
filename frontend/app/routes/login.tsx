@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { MetaFunction, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import NavigationBar from "~/components/NavigationBar";
 import { Button } from "~/components/ui/button";
@@ -9,12 +9,19 @@ import { Label } from "~/components/ui/label";
 import { hasValidSession } from "~/lib/auth.server";
 import Cookies from 'js-cookie';
 
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Real Time Chat | Login" },
+    { name: "description", content: "The page for logging in to the Real Time Chat application." },
+  ];
+};
+
 export async function loader({
   request,
 }: LoaderFunctionArgs) {
   const validSession = await hasValidSession(request);
   if (validSession) {
-    return redirect("/");
+    return redirect("/chat");
   }
   const server_url = process.env.SERVER_URL;
   if (!server_url) {
@@ -51,7 +58,7 @@ export default function Login() {
         const data = await response.json() as {session_id: string, error: string}
         if (data.error === "") {
             // Setting the session cookie
-            Cookies.set("session_id", data.session_id);
+            Cookies.set("session_id", data.session_id, { expires: 30, sameSite: "Lax", path: "/"});
             // Redirecting to the home page
             window.location.href = "/";
         }

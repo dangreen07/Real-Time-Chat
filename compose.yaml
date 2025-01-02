@@ -9,6 +9,12 @@ services:
     build: ./frontend
     ports:
       - "3000:3000"
+    links:
+      - "real-time-chat-backend:localhost"
+    environment:
+      SERVER_URL: ${SERVER_URL}
+      WS_SERVER_URL: ${WS_SERVER_URL}
+      SERVER_URL_FROM_SERVER: http://real-time-chat-backend:8080
 
 networks:
   default:

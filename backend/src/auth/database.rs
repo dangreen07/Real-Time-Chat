@@ -14,7 +14,7 @@ use uuid::Uuid;
 
 use crate::models::*;
 
-pub fn create_user(conn: &mut PgConnection, arg_username: &str, arg_password: &str) -> Result<User, &'static str> {
+pub fn create_user(conn: &mut PgConnection, arg_username: &str, arg_full_name: &str, arg_password: &str) -> Result<User, &'static str> {
     use crate::schema::users;
     use crate::schema::users::dsl::*;
 
@@ -36,6 +36,7 @@ pub fn create_user(conn: &mut PgConnection, arg_username: &str, arg_password: &s
     // Creating the user
     let new_user = NewUser {
         username: arg_username,
+        full_name: arg_full_name,
         password_hash: &password_hashed,
     };
 
@@ -85,23 +86,6 @@ pub fn invalidate_session(conn: &mut PgConnection, arg_session_id: &uuid::Uuid) 
     use crate::schema::sessions::dsl::*;
 
     diesel::delete(sessions.filter(id.eq(arg_session_id))).execute(conn)
-}
-
-pub fn get_user(conn: &mut PgConnection, arg_session_id: &uuid::Uuid) -> Result<User, &'static str> {
-    use crate::schema::{sessions, users};
-
-    let resp = sessions::table
-        .inner_join(users::table)
-        .filter(sessions::id.eq(arg_session_id))
-        .select((Session::as_select(), User::as_select()))
-        .first::<(Session, User)>(conn);
-
-    let resp = match resp {
-        Ok(session) => session,
-        Err(_) => return Err("Error getting user")
-    };
-    let user = resp.1;
-    Ok(user)
 }
 
 pub fn verify_user(conn: &mut PgConnection, arg_username: &str, arg_password: &str) -> Result<Uuid, &'static str> {

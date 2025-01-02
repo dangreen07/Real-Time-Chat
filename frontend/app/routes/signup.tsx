@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { MetaFunction, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import NavigationBar from "~/components/NavigationBar";
 import { Button } from "~/components/ui/button";
@@ -9,12 +9,19 @@ import { Label } from "~/components/ui/label";
 import { hasValidSession } from "~/lib/auth.server";
 import Cookies from 'js-cookie';
 
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Real Time Chat | Signup" },
+    { name: "description", content: "The page for signing up to the Real Time Chat application." },
+  ];
+};
+
 export async function loader({
   request,
 }: LoaderFunctionArgs) {
   const validSession = await hasValidSession(request);
   if (validSession) {
-    return redirect("/");
+    return redirect("/chat");
   }
   const server_url = process.env.SERVER_URL;
   if (!server_url) {
@@ -33,10 +40,11 @@ export default function Signup() {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         const username = formData.get("username");
+        const fullName = formData.get("full-name");
         const password = formData.get("password");
         const confirmPassword = formData.get("confirm-password");
-        if (username === null || password === null || confirmPassword === null || username === "" || password === "" || confirmPassword === "") {
-            setError("Please enter a username, password, and confirm password");
+        if (username === null || password === null || confirmPassword === null || fullName === null || username === "" || password === "" || confirmPassword === "" || fullName === "") {
+            setError("Please enter a username, full name, password, and confirm password");
             return;
         }
         if (password !== confirmPassword) {
@@ -50,13 +58,14 @@ export default function Signup() {
             },
             body: JSON.stringify({
                 username: username,
+                full_name: fullName,
                 password: password
             })
         });
         const data = await response.json() as {session_id: string, error: string}
         if (data.error === "") {
             // Setting the session cookie
-            Cookies.set("session_id", data.session_id);
+            Cookies.set("session_id", data.session_id, { expires: 30, sameSite: "Lax", path: "/"});
             // Redirecting to the home page
             window.location.href = "/";
         }
@@ -67,8 +76,7 @@ export default function Signup() {
 
     return (
     <div className="min-h-screen flex flex-col">
-        <title>Real Time Chat | Signup</title>
-        <NavigationBar loggedIn={false} />
+        <NavigationBar loggedIn={false} server_url={server_url} />
         <div id="signup-section" className="min-h-screen flex flex-col w-full h-full justify-center items-center gap-4">
             <Card className="w-full max-w-sm">
                 <CardHeader>
@@ -78,7 +86,11 @@ export default function Signup() {
                 <CardContent>
                     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
                         <div className="flex flex-col space-y-2">
-                            <Label htmlFor="name">Username</Label>
+                            <Label htmlFor="full-name">Full Name</Label>
+                            <Input id="full-name" name="full-name" type="text" placeholder="Full Name" />
+                        </div>
+                        <div className="flex flex-col space-y-2">
+                            <Label htmlFor="username">Username</Label>
                             <Input id="username" name="username" type="text" placeholder="Username" />
                         </div>
                         <div className="flex flex-col space-y-2">
@@ -86,7 +98,7 @@ export default function Signup() {
                             <Input name="password" id="password" type="password" placeholder="Password" />
                         </div>
                         <div className="flex flex-col space-y-2">
-                            <Label htmlFor="password">Confirm Password</Label>
+                            <Label htmlFor="confirm-password">Confirm Password</Label>
                             <Input name="confirm-password" id="confirm-password" type="password" placeholder="Confirm password" />
                         </div>
                         {error != "" && <p className="text-red-500 text-md text-center">{error}</p>}

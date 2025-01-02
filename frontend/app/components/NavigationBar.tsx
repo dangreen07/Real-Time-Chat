@@ -1,8 +1,8 @@
 import { FaUser } from "react-icons/fa";
-import { ModeToggle } from "./ModeToggle";
 import { Button } from "./ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import Cookies from 'js-cookie';
+import { ThemeToggle } from "./ModeToggle";
 
 export default function NavigationBar({loggedIn, server_url}: {loggedIn: boolean, server_url: string}) {
 
@@ -21,8 +21,8 @@ export default function NavigationBar({loggedIn, server_url}: {loggedIn: boolean
     }
 
     return (
-    <div className="flex w-full px-2 absolute top-0">
-    <div id="navigation-bar" className="flex w-full justify-between p-3 items-center h-20 border-b-2 border-zinc-200 dark:border-zinc-700">
+    <div className="flex w-full px-2 absolute top-0 h-20">
+    <div id="navigation-bar" className="flex w-full justify-between p-3 items-center border-b-2 border-zinc-200 dark:border-zinc-700">
         <div id="left-side">
             <button onClick={() => {
                 if(window.location.href !== "/")
@@ -34,6 +34,10 @@ export default function NavigationBar({loggedIn, server_url}: {loggedIn: boolean
             </button>
         </div>
         <div id="right-side" className="flex gap-3 items-center">
+            {loggedIn &&
+            <Button onClick={() => {
+                window.location.href = "/chat";
+            }}>Chat</Button>}
             {loggedIn ?
             <DropdownMenu>
                 <DropdownMenuTrigger>
@@ -54,7 +58,7 @@ export default function NavigationBar({loggedIn, server_url}: {loggedIn: boolean
             }} variant="default" size="default">
                 Sign Up
             </Button>}
-            <ModeToggle />
+            <ThemeToggle />
         </div>
     </div>
     </div>

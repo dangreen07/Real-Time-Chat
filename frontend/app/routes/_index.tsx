@@ -36,7 +36,9 @@ export default function Index() {
           A simple chat app with contacts and groupchats
         </p>
         <div className="flex flex-col items-center justify-center w-full h-full">
-          <Button variant="default" size="lg">Get Started</Button>
+          <Button variant="default" size="lg" onClick={() => {
+            window.location.href = "/signup";
+          }}>Get Started</Button>
         </div>
       </div>
     </div>
