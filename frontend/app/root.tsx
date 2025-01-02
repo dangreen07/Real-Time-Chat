@@ -16,6 +16,7 @@ import {
 import "./tailwind.css";
 import { getThemeFromCookie } from '~/lib/theme.server';
 import { ThemeProvider } from './components/theme-provider';
+import { PreventFlashOnWrongTheme, useTheme } from 'remix-themes';
 
 // Code for dark mode toggle
 // https://github.com/abdulkader/remix-shadcn-ui-dark-theme-demo/tree/main
@@ -41,6 +42,14 @@ export default function App() {
     );
   };
   return (
+    <ThemeProvider defaultTheme={theme} onThemeChange={onThemeChange}>
+      <AppShell theme={theme} />
+    </ThemeProvider>
+  );
+}
+
+export function AppShell({theme}: {theme: string}) {
+  return (
     <html lang="en" className={theme ?? 'theme'}>
       <head>
         <meta charSet="utf-8" />
@@ -49,12 +58,10 @@ export default function App() {
         <Links />
       </head>
       <body className="bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100">
-        <ThemeProvider defaultTheme={theme} onThemeChange={onThemeChange}>
           <Outlet />
-        </ThemeProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
     </html>
-  );
+  )
 }

@@ -6,7 +6,6 @@ import { hasValidSession } from "~/lib/auth.server";
 import { getContacts, WebSocketObject } from "~/lib/messaging.server";
 import ContactsList from "./ContactsList";
 import ContactsListFallback from "./ContactsListFallback";
-import ChatSectionFallback from "./ChatSectionFallback";
 import ChatSection from "./ChatSection";
 import Cookies from 'js-cookie';
 
