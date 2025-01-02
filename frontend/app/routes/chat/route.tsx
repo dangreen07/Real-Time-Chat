@@ -21,15 +21,19 @@ export async function loader({request}: LoaderFunctionArgs) {
     if (!isAuthenticated) {
         return redirect("/");
     }
-    const server_url = process.env.SERVER_URL_FROM_SERVER;
-    if (!server_url) {
+    const server_url_from_server = process.env.SERVER_URL_FROM_SERVER;
+    if (!server_url_from_server) {
         throw new Error("SERVER_URL_FROM_SERVER environment variable is not set");
     }
     const ws_server_url = process.env.WS_SERVER_URL;
     if (!ws_server_url) {
         throw new Error("WS_SERVER_URL environment variable is not set");
     }
-    const contacts = getContacts(server_url, request);
+    const contacts = getContacts(server_url_from_server, request);
+    const server_url = process.env.SERVER_URL;
+    if (!server_url) {
+        throw new Error("SERVER_URL environment variable is not set");
+    }
     return {
         server_url,
         ws_server_url,
